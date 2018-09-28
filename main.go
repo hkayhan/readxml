@@ -8,7 +8,6 @@ import (
 	"github.com/gin-contrib/cors"
 )
 
-
 type Recording struct {
 	EndTime string `xml:"end_time"`
 	ID      string `xml:"id"`
@@ -24,8 +23,8 @@ type Recording struct {
 		MeetingName string `xml:"meetingName"`
 	} `xml:"meta"`
 	Participants string `xml:"participants"`
-	Playback     struct {
-		Duration   string `xml:"duration"`
+	Playback struct {
+		Duration string `xml:"duration"`
 		Extensions struct {
 			Preview struct {
 				Images []struct {
@@ -47,11 +46,11 @@ type Recording struct {
 	State     string `xml:"state"`
 }
 
+type Answer struct {
+	DuratiOn string `json:"duration"`
+}
+
 func main() {
-
-
-
-
 
 	router := gin.Default()
 
@@ -62,37 +61,24 @@ func main() {
 	config.AllowMethods = []string{"OPTIONS", "GET", "POST"}
 	router.Use(cors.New(config))
 
-
-
 	router.GET("/duration/:path", Duration)
 
 	router.Run(":8070")
 
-
-
-
 }
-
 
 func Duration(c *gin.Context) {
 
-
-	//u := c.PostForm("userid")
-
 	var str Recording
-
-	file:= c.Param("path") + "/metadata.xml"
-	fmt.Println(file)
+	file := c.Param("path") + "/metadata.xml"
 	bs, err := ioutil.ReadFile(file)
-
 	if err != nil {
 		fmt.Println("file not found")
 		return
 	}
-
+	var ans Answer
 	xml.Unmarshal(bs, &str)
-	fmt.Println(str.Playback.Duration)
-
-	c.String(200, str.Playback.Duration)
+	ans.DuratiOn = str.Playback.Duration
+	c.JSON(200, ans)
 
 }
